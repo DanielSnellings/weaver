@@ -43,13 +43,8 @@ func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterP
 	fmt.Println(len(answer.Variants))
 	fmt.Println(len(answer.Cells))
 	globalFilter.Apply(answer)
-	annotateVariantsAndCells(answer)
 
 	return answer
-}
-
-func annotateVariantsAndCells(data *Data) {
-	//TODO
 }
 
 func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
