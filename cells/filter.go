@@ -22,6 +22,8 @@ type GlobalFilterParam struct {
 	MinCellAf           float64 // remove variants mutated in < MinCellAf of cells // Default 0.1
 }
 
+// Apply the global filter to the input data.
+// Removes filtered cells and variants and updates the respective Ids.
 func (f GlobalFilterParam) Apply(d *Data) {
 	ignoreCells := make([]bool, len(d.Cells))
 	ignoreVariants := make([]bool, len(d.Variants))
@@ -31,6 +33,8 @@ func (f GlobalFilterParam) Apply(d *Data) {
 	removeFailing(d, ignoreCells, ignoreVariants)
 }
 
+// applyMinGenotypedFrac sets ignoredVariants[i] to true if Variants[i] has less than the minimum
+// fraction of cells genotyped.
 func applyMinGenotypedFrac(d *Data, f GlobalFilterParam, ignoreCells []bool, ignoreVariants []bool) {
 	totalCells := float64(len(d.Cells))
 	for i := range d.Variants {
@@ -44,6 +48,8 @@ func applyMinGenotypedFrac(d *Data, f GlobalFilterParam, ignoreCells []bool, ign
 	}
 }
 
+// applyMinGenotypesPresent sets ignoredCells[i] to true if Cells[i] has less than the minimum
+// fraction of variants present
 func applyMinGenotypesPresent(d *Data, f GlobalFilterParam, ignoreCells []bool, ignoreVariants []bool) {
 	passingVariants := countFalse(ignoreVariants)
 	for i := range d.Cells {
@@ -57,6 +63,8 @@ func applyMinGenotypesPresent(d *Data, f GlobalFilterParam, ignoreCells []bool, 
 	}
 }
 
+// applyMinCellAf sets ignoredVariants[i] to true if Variants[i] has less than the minimum
+// fraction of mutant cells present
 func applyMinCellAf(d *Data, f GlobalFilterParam, ignoreCells []bool, ignoreVariants []bool) {
 	totalCells := countFalse(ignoreCells)
 	for i := range d.Variants {
@@ -70,6 +78,7 @@ func applyMinCellAf(d *Data, f GlobalFilterParam, ignoreCells []bool, ignoreVari
 	}
 }
 
+// removeFailing removes all cells and variants which were determined should be ignored
 func removeFailing(d *Data, ignoreCells []bool, ignoreVariants []bool) {
 	passingCells, passingVariants, newCellIds, newVariantIds := fetchPassingCellsAndVariants(d, ignoreCells, ignoreVariants)
 	d.Cells = passingCells
@@ -93,6 +102,7 @@ func removeFailing(d *Data, ignoreCells []bool, ignoreVariants []bool) {
 	}
 }
 
+// updateCellVar updates the CellVar slice in each Variant after removing variants during filtering
 func updateCellVar(cellVars []CellVar, ignoreVariants []bool, newVariantIds []int) []CellVar {
 	answer := make([]CellVar, 0, len(cellVars))
 	for _, currCv := range cellVars {
@@ -106,6 +116,7 @@ func updateCellVar(cellVars []CellVar, ignoreVariants []bool, newVariantIds []in
 	return answer
 }
 
+// updateCellIds updates the slice of cell ids stored in each Variant after removing cells during filtering
 func updateCellIds(cellIds []int , ignoreCells []bool, newCellIds []int) []int {
 	answer := make([]int, 0, len(cellIds))
 	for _, oldId := range cellIds {
@@ -117,6 +128,8 @@ func updateCellIds(cellIds []int , ignoreCells []bool, newCellIds []int) []int {
 	return answer
 }
 
+// fetchPassingCellsAndVariants retrieves all cells and variants that pass filters according to ignoreCells and ignoreVariants.
+// The newCellIds and newVariantIds returns record the old Id for each cell/variant so that other fields can be updated later.
 func fetchPassingCellsAndVariants(d *Data, ignoreCells []bool, ignoreVariants []bool) (passingCells []Cell, passingVariants []Variant, newCellIds []int, newVariantIds []int) {
 	passingCells = make([]Cell, int(countFalse(ignoreCells)))
 	passingVariants = make([]Variant, int(countFalse(ignoreVariants)))
@@ -146,6 +159,7 @@ func fetchPassingCellsAndVariants(d *Data, ignoreCells []bool, ignoreVariants []
 	return
 }
 
+// countFalse returns a float64 with the number of false in a []bool
 func countFalse(b []bool) float64 {
 	var answer float64
 	for i := range b {
@@ -156,11 +170,12 @@ func countFalse(b []bool) float64 {
 	return answer
 }
 
+// countPassingCellVar returns a float64 with the number of CellVar passing filters
 func countPassingCellVar(v []CellVar, ignoreVariants []bool) float64 {
 	var answer float64
 	for i := range v {
 		if !ignoreVariants[v[i].Vid] {
-			answer ++
+			answer++
 		}
 	}
 	return answer
