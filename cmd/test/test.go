@@ -13,4 +13,13 @@ var defaultGlobalFilter = cells.GlobalFilterParam{MinGenotypedFrac: 0.5, MinGeno
 func main() {
 	data := cells.ReadVcf("/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/CM2001_R/CM2001.vcf.gz", defaultCellFilter, defaultGlobalFilter, defaultVcfQual)
 	fmt.Println(len(data.Variants))
+	fmt.Println(len(data.Cells))
+
+	//for i := range data.Variants{
+	//	if len(data.Variants[i].CellsGenotyped) != len(data.Variants[i].CellsMutated) {
+	//		//fmt.Println(len(data.Variants[i].CellsGenotyped))
+	//		//fmt.Println(len(data.Variants[i].CellsMutated))
+	//		//fmt.Println()
+	//	}
+	//}
 }

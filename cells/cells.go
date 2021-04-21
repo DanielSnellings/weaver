@@ -40,7 +40,16 @@ func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterP
 		}
 	}
 
+	fmt.Println(len(answer.Variants))
+	fmt.Println(len(answer.Cells))
+	globalFilter.Apply(answer)
+	annotateVariantsAndCells(answer)
+
 	return answer
+}
+
+func annotateVariantsAndCells(data *Data) {
+	//TODO
 }
 
 func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
@@ -62,15 +71,15 @@ func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 }
 
 func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) Variant {
+	var currCv CellVar
 	for idx := range v.Samples {
-		currCv := getCellVar(v.Samples[idx], alleleIdx, variant)
+		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
 		if cellFilter.Passes(currCv) {
 			variant.CellsGenotyped = append(variant.CellsGenotyped, idx)
 			if currCv.Genotype != WildType {
 				variant.CellsMutated = append(variant.CellsMutated, idx)
 			}
 			data.Cells[idx].Variants = append(data.Cells[idx].Variants, currCv)
-			fmt.Println("passed:", currCv)
 		}
 	}
 	return variant
@@ -85,7 +94,7 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 	}
 
 	answer.Vid = variant.Id
-	answer.Genotype = getZygosity(g, alleleIdx)
+	answer.Genotype = getZygosity(g, alleleIdx + 1)
 
 	answer.GenotypeQuality, err = strconv.Atoi(g.FormatData[3])
 	if err != nil {
@@ -127,8 +136,22 @@ func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
 	case 2:
 		return Homozygous
 	default:
-		log.Panic()
+		log.Panic("could not get zygosity for", g)
 		return WildType
+	}
+}
+
+// stringZygosity converts type Zygosity to a string. Mainly for debugging purposes.
+func stringZygosity(z Zygosity) string {
+	switch z {
+	case WildType:
+		return "WT"
+	case Heterozygous:
+		return "Het"
+	case Homozygous:
+		return "Hom"
+	default:
+		return "NOT FOUND"
 	}
 }
 
