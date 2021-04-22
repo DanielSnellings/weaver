@@ -1,7 +1,5 @@
 package cells
 
-var debugTestPos = 110249348
-
 // CellFilterParam defines the minimum values used for filtering cell.
 // These filters are applied on a per-cell basis
 type CellFilterParam struct {
@@ -53,7 +51,7 @@ func applyMinGenotypesPresent(d *Data, f GlobalFilterParam, ignoreCells []bool, 
 			continue
 		}
 
-		if countPassingCellVar(d.Cells[i].Variants, ignoreVariants)/passingVariants < f.MinGenotypesPresent {
+		if countPassingCellVar(d.Cells[i].Genotypes, ignoreVariants)/passingVariants < f.MinGenotypesPresent {
 			ignoreCells[i] = true
 		}
 	}
@@ -84,8 +82,8 @@ func removeFailing(d *Data, ignoreCells []bool, ignoreVariants []bool) {
 
 	// update fields inside cells
 	for i := range d.Cells {
-		d.Cells[i].Variants = updateCellVar(d.Cells[i].Variants, ignoreVariants, newVariantIds)
-		d.Cells[i].GenotypesPresent = float64(len(d.Cells[i].Variants)) / totalVariants
+		d.Cells[i].Genotypes = updateCellVar(d.Cells[i].Genotypes, ignoreVariants, newVariantIds)
+		d.Cells[i].GenotypesPresent = float64(len(d.Cells[i].Genotypes)) / totalVariants
 	}
 
 	// update fields inside variants
@@ -104,7 +102,6 @@ func updateCellVar(cellVars []CellVar, ignoreVariants []bool, newVariantIds []in
 		if ignoreVariants[currCv.Vid] {
 			continue
 		}
-
 		currCv.Vid = newVariantIds[currCv.Vid]
 		answer = append(answer, currCv)
 	}

@@ -1,7 +1,6 @@
 package cells
 
 import (
-	"fmt"
 	"github.com/vertgenlab/gonomics/dna"
 	"github.com/vertgenlab/gonomics/vcf"
 	"log"
@@ -13,7 +12,7 @@ type BarcodeMap map[Barcode]Cell
 
 type Cell struct {
 	Id               int
-	Variants         []CellVar
+	Genotypes         []CellVar
 	GenotypesPresent float64
 }
 
@@ -40,10 +39,7 @@ func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterP
 		}
 	}
 
-	fmt.Println(len(answer.Variants))
-	fmt.Println(len(answer.Cells))
 	globalFilter.Apply(answer)
-
 	return answer
 }
 
@@ -67,27 +63,18 @@ func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFil
 	var currCv CellVar
 	for idx := range v.Samples {
 		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
-		//if v.Pos == 178952090 && alleleIdx == 0 {
-		//	fmt.Println(v.Samples[idx])
-		//	fmt.Println(currCv)
-		//}
+
 		if currCv.GenotypeQuality > cellFilter.MinGenotypeQuality &&
 			currCv.ReadDepth > cellFilter.MinGenotypeDepth {
-			//if v.Pos == 178952090 && alleleIdx == 0 {
-			//	fmt.Println("passed")
-			//}
+
 			variant.CellsGenotyped = append(variant.CellsGenotyped, idx)
 			if currCv.Af > cellFilter.MinReadAf {
 				variant.CellsMutated = append(variant.CellsMutated, idx)
 			} else if currCv.Genotype != WildType {
 				currCv.Genotype = WildType
 			}
-			data.Cells[idx].Variants = append(data.Cells[idx].Variants, currCv)
-		} //else {
-		//	if v.Pos == 178952090 && alleleIdx == 0 {
-		//		fmt.Println("failed")
-		//	}
-		//}
+		}
+		data.Cells[idx].Genotypes = append(data.Cells[idx].Genotypes, currCv)
 	}
 	return variant
 }
@@ -115,9 +102,6 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 
 	altReadsPerAllele := strings.Split(g.FormatData[1], ",")
 	answer.AltReads, err = strconv.Atoi(altReadsPerAllele[alleleIdx+1])
-	//if answer.Vid == 5960 && alleleIdx == 0 {
-	//	fmt.Println(altReadsPerAllele)
-	//}
 	if err != nil {
 		answer.AltReads = 0
 	}
