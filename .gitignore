@@ -1,2 +1,16 @@
+#intellij IDE file
 *.iml
+
+# Output of the go coverage tool
+*.out
+
+#Test binary, build with 'go test -c'
+*.test
+
+#Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
