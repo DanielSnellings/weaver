@@ -14,7 +14,7 @@ type BarcodeMap map[Barcode]Cell
 // Cell stores information on genotypes for a single cell
 type Cell struct {
 	Id               int
-	Genotypes         []CellVar
+	Genotypes        []CellVar
 	GenotypesPresent float64
 }
 
@@ -90,13 +90,12 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 	var answer CellVar
 	var err error
 
+	answer.Vid = variant.Id
 	if g.AlleleOne == -1 && g.AlleleTwo == -1 {
 		return answer
 	}
 
-	answer.Vid = variant.Id
 	answer.Genotype = getZygosity(g, alleleIdx+1)
-
 	answer.GenotypeQuality, err = strconv.Atoi(g.FormatData[3])
 	if err != nil {
 		answer.GenotypeQuality = 0
@@ -140,20 +139,6 @@ func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
 	default:
 		log.Panic("could not get zygosity for", g)
 		return WildType
-	}
-}
-
-// stringZygosity converts type Zygosity to a string. Mainly for debugging purposes
-func stringZygosity(z Zygosity) string {
-	switch z {
-	case WildType:
-		return "WT"
-	case Heterozygous:
-		return "Het"
-	case Homozygous:
-		return "Hom"
-	default:
-		return "NOT FOUND"
 	}
 }
 

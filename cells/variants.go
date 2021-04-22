@@ -31,8 +31,25 @@ type CellVar struct {
 // Zygosity of a given variant
 type Zygosity byte
 
+// String converts type Zygosity to a string. Mainly for debugging purposes
+func (z Zygosity) String() string {
+	switch z {
+	case NoGenotype:
+		return "NA"
+	case WildType:
+		return "WT"
+	case Heterozygous:
+		return "Het"
+	case Homozygous:
+		return "Hom"
+	default:
+		return "NOT FOUND"
+	}
+}
+
 const (
-	WildType Zygosity = iota
+	NoGenotype Zygosity = iota
+	WildType
 	Heterozygous
 	Homozygous
 	Hemizygous

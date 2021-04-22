@@ -20,164 +20,163 @@ import (
 // Allele 5 (Var 3, Alt 2)		WT,WT,Het		100,100,100		0,1,50		98,9,50		99,99,99
 
 var expectedData = Data{
-	Cells: []Cell{expectedCell1, expectedCell2, expectedCell3},
+	Cells:    []Cell{expectedCell1, expectedCell2, expectedCell3},
 	Variants: []Variant{expectedAllele2, expectedAllele3, expectedAllele4, expectedAllele5},
 }
 
 // Expected Cells
 var expectedCell1 = Cell{
-	Id: 0,
-	Genotypes: cellVar1,
+	Id:               0,
+	Genotypes:        cellVar1,
 	GenotypesPresent: 1,
 }
 var cellVar1 = []CellVar{{
-	Vid: 0,
-	Genotype: WildType,
+	Vid:             0,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 0,
-	Af: 0,
+	ReadDepth:       100,
+	AltReads:        0,
+	Af:              0,
 }, {
-	Vid: 1,
-	Genotype: WildType,
+	Vid:             1,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 0,
-	Af: 0,
+	ReadDepth:       100,
+	AltReads:        0,
+	Af:              0,
 }, {
-	Vid: 2,
-	Genotype: WildType,
+	Vid:             2,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 2,
-	Af: float64(2)/float64(100),
+	ReadDepth:       100,
+	AltReads:        2,
+	Af:              float64(2) / float64(100),
 }, {
-	Vid: 3,
-	Genotype: WildType,
+	Vid:             3,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 0,
-	Af: 0,
+	ReadDepth:       100,
+	AltReads:        0,
+	Af:              0,
 }}
 
 var expectedCell2 = Cell{
-	Id: 1,
-	Genotypes: cellVar2,
+	Id:               1,
+	Genotypes:        cellVar2,
 	GenotypesPresent: 1,
 }
 var cellVar2 = []CellVar{{
-	Vid: 0,
-	Genotype: Heterozygous,
+	Vid:             0,
+	Genotype:        Heterozygous,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 30,
-	Af: float64(30)/float64(100),
+	ReadDepth:       100,
+	AltReads:        30,
+	Af:              float64(30) / float64(100),
 }, {
-	Vid: 1,
-	Genotype: WildType,
+	Vid:             1,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 2,
-	Af: float64(2)/float64(100),
+	ReadDepth:       100,
+	AltReads:        2,
+	Af:              float64(2) / float64(100),
 }, {
-	Vid: 2,
-	Genotype: Homozygous,
+	Vid:             2,
+	Genotype:        Homozygous,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 90,
-	Af: float64(90)/float64(100),
+	ReadDepth:       100,
+	AltReads:        90,
+	Af:              float64(90) / float64(100),
 }, {
-	Vid: 3,
-	Genotype: WildType,
+	Vid:             3,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 1,
-	Af: float64(1)/float64(100),
+	ReadDepth:       100,
+	AltReads:        1,
+	Af:              float64(1) / float64(100),
 }}
 
 var expectedCell3 = Cell{
-	Id: 2,
-	Genotypes: cellVar3,
+	Id:               2,
+	Genotypes:        cellVar3,
 	GenotypesPresent: 1,
 }
 var cellVar3 = []CellVar{{
-	Vid: 0,
-	Genotype: Heterozygous,
+	Vid:             0,
+	Genotype:        Heterozygous,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 50,
-	Af: float64(50)/float64(100),
+	ReadDepth:       100,
+	AltReads:        50,
+	Af:              float64(50) / float64(100),
 }, {
-	Vid: 1,
-	Genotype: Heterozygous,
+	Vid:             1,
+	Genotype:        Heterozygous,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 40,
-	Af: float64(40)/float64(100),
+	ReadDepth:       100,
+	AltReads:        40,
+	Af:              float64(40) / float64(100),
 }, {
-	Vid: 2,
-	Genotype: WildType,
+	Vid:             2,
+	Genotype:        WildType,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 0,
-	Af: 0,
+	ReadDepth:       100,
+	AltReads:        0,
+	Af:              0,
 }, {
-	Vid: 3,
-	Genotype: Heterozygous,
+	Vid:             3,
+	Genotype:        Heterozygous,
 	GenotypeQuality: 99,
-	ReadDepth: 100,
-	AltReads: 50,
-	Af: float64(50)/float64(100),
+	ReadDepth:       100,
+	AltReads:        50,
+	Af:              float64(50) / float64(100),
 }}
 
 // Expected Variants
 // Allele 1 is removed by vcf quality filter
 var expectedAllele2 = Variant{
-	Id: 0	,
-	Chr: "chr1"	,
-	Pos: 1	,
-	Ref: dna.StringToBases("A"),
-	Alt: dna.StringToBases("C"),
-	CellsGenotyped:	[]int{0,1,2},
-	CellsMutated: []int{1,2},
-	GenotypedFrac: 1,
-	CellAf: float64(2)/float64(3),
+	Id:             0,
+	Chr:            "chr1",
+	Pos:            1,
+	Ref:            dna.StringToBases("A"),
+	Alt:            dna.StringToBases("C"),
+	CellsGenotyped: []int{0, 1, 2},
+	CellsMutated:   []int{1, 2},
+	GenotypedFrac:  1,
+	CellAf:         float64(2) / float64(3),
 }
 var expectedAllele3 = Variant{
-	Id: 1	,
-	Chr: "chr1"	,
-	Pos: 1	,
-	Ref: dna.StringToBases("A"),
-	Alt: dna.StringToBases("G"),
-	CellsGenotyped:	[]int{0,1,2},
-	CellsMutated: []int{2},
-	GenotypedFrac: 1,
-	CellAf: float64(1)/float64(3),
+	Id:             1,
+	Chr:            "chr1",
+	Pos:            1,
+	Ref:            dna.StringToBases("A"),
+	Alt:            dna.StringToBases("G"),
+	CellsGenotyped: []int{0, 1, 2},
+	CellsMutated:   []int{2},
+	GenotypedFrac:  1,
+	CellAf:         float64(1) / float64(3),
 }
 var expectedAllele4 = Variant{
-	Id: 2	,
-	Chr: "chr1"	,
-	Pos: 2	,
-	Ref: dna.StringToBases("T"),
-	Alt: dna.StringToBases("C"),
-	CellsGenotyped:	[]int{0,1,2},
-	CellsMutated: []int{1},
-	GenotypedFrac: 1,
-	CellAf: float64(1)/float64(3),
+	Id:             2,
+	Chr:            "chr1",
+	Pos:            2,
+	Ref:            dna.StringToBases("T"),
+	Alt:            dna.StringToBases("C"),
+	CellsGenotyped: []int{0, 1, 2},
+	CellsMutated:   []int{1},
+	GenotypedFrac:  1,
+	CellAf:         float64(1) / float64(3),
 }
 var expectedAllele5 = Variant{
-	Id: 3	,
-	Chr: "chr1"	,
-	Pos: 2	,
-	Ref: dna.StringToBases("T"),
-	Alt: dna.StringToBases("A"),
-	CellsGenotyped:	[]int{0,1,2},
-	CellsMutated: []int{2},
-	GenotypedFrac: 1,
-	CellAf: float64(1)/float64(3),
+	Id:             3,
+	Chr:            "chr1",
+	Pos:            2,
+	Ref:            dna.StringToBases("T"),
+	Alt:            dna.StringToBases("A"),
+	CellsGenotyped: []int{0, 1, 2},
+	CellsMutated:   []int{2},
+	GenotypedFrac:  1,
+	CellAf:         float64(1) / float64(3),
 }
 var expectedNumVariants = 4
-
 
 var defaultVcfQual float64 = 100
 var defaultCellFilter = CellFilterParam{MinGenotypeQuality: 30, MinGenotypeDepth: 10, MinReadAf: 0.2}
@@ -206,7 +205,7 @@ func equalCells(a []Cell, b []Cell) bool {
 		case a[i].GenotypesPresent != b[i].GenotypesPresent:
 			return false
 		case !equalCellVar(a[i].Genotypes, b[i].Genotypes):
-			 return false
+			return false
 		}
 	}
 	return true
