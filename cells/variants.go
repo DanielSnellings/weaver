@@ -4,6 +4,8 @@ import (
 	"github.com/vertgenlab/gonomics/dna"
 )
 
+// Variant stores information about a DNA change and the Id numbers
+// for each cell with a valid genotype and mutation
 type Variant struct {
 	Id             int // position in variant slice
 	Chr            string
@@ -16,6 +18,7 @@ type Variant struct {
 	CellAf         float64 // allele frequency by cell count //TODO split to true allele frequency (het/hom aware) and cells mutated fraction
 }
 
+// CellVar stores information about a paritcular variant inside a cell
 type CellVar struct {
 	Vid             int // variant ID, equivalent to Variant.Id
 	Genotype        Zygosity
@@ -25,6 +28,7 @@ type CellVar struct {
 	Af              float64 // allele frequency by read count
 }
 
+// Zygosity of a given variant
 type Zygosity byte
 
 const (

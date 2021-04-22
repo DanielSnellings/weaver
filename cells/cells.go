@@ -8,19 +8,23 @@ import (
 	"strings"
 )
 
+// BarcodeMap links each Cell to its 18bp Barcode
 type BarcodeMap map[Barcode]Cell
 
+// Cell stores information on genotypes for a single cell
 type Cell struct {
 	Id               int
 	Genotypes         []CellVar
 	GenotypesPresent float64
 }
 
+// Data organizes Cell and Variant information from a vcf file
 type Data struct {
 	Cells    []Cell
 	Variants []Variant
 }
 
+// ReadVcf into a Data struct that stores information about Cells and Variants that pass the input filters
 func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterParam, minVcfQual float64) *Data {
 	vcfChan, header := vcf.GoReadToChan(file)
 	answer := new(Data)
@@ -43,6 +47,7 @@ func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterP
 	return answer
 }
 
+// parseVcf to fill the appropriate fields in data
 func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 	var offset int
 	for alleleIdx := range v.Alt { // for each allele make a new variant
@@ -59,6 +64,7 @@ func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 	}
 }
 
+// processCells parses all cells from a given vcf record and stores them directly in data
 func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) Variant {
 	var currCv CellVar
 	for idx := range v.Samples {
@@ -79,6 +85,7 @@ func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFil
 	return variant
 }
 
+// getCellVar parses a GenomeSample into a CellVar
 func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 	var answer CellVar
 	var err error
@@ -110,6 +117,7 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 	return answer
 }
 
+// getZygosity parses a GenomeSample and returns the variant Zygosity
 func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
 	var alleleCount int
 	if g.AlleleOne == int16(alleleIdx) {
@@ -135,7 +143,7 @@ func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
 	}
 }
 
-// stringZygosity converts type Zygosity to a string. Mainly for debugging purposes.
+// stringZygosity converts type Zygosity to a string. Mainly for debugging purposes
 func stringZygosity(z Zygosity) string {
 	switch z {
 	case WildType:
