@@ -59,9 +59,7 @@ func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 		variant.Ref, variant.Alt, offset = trimMatchingBases(variant.Ref, variant.Alt)
 		variant.Pos += offset
 		variant = processCells(v, variant, alleleIdx, cellFilter, data)
-		if len(variant.CellsMutated) > 0 {
-			data.Variants = append(data.Variants, variant)
-		}
+		data.Variants = append(data.Variants, variant)
 	}
 }
 
@@ -69,13 +67,27 @@ func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFil
 	var currCv CellVar
 	for idx := range v.Samples {
 		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
-		if cellFilter.Passes(currCv) {
+		//if v.Pos == 178952090 && alleleIdx == 0 {
+		//	fmt.Println(v.Samples[idx])
+		//	fmt.Println(currCv)
+		//}
+		if currCv.GenotypeQuality > cellFilter.MinGenotypeQuality &&
+			currCv.ReadDepth > cellFilter.MinGenotypeDepth {
+			//if v.Pos == 178952090 && alleleIdx == 0 {
+			//	fmt.Println("passed")
+			//}
 			variant.CellsGenotyped = append(variant.CellsGenotyped, idx)
-			if currCv.Genotype != WildType {
+			if currCv.Af > cellFilter.MinReadAf {
 				variant.CellsMutated = append(variant.CellsMutated, idx)
+			} else if currCv.Genotype != WildType {
+				currCv.Genotype = WildType
 			}
 			data.Cells[idx].Variants = append(data.Cells[idx].Variants, currCv)
-		}
+		} //else {
+		//	if v.Pos == 178952090 && alleleIdx == 0 {
+		//		fmt.Println("failed")
+		//	}
+		//}
 	}
 	return variant
 }
@@ -89,7 +101,7 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 	}
 
 	answer.Vid = variant.Id
-	answer.Genotype = getZygosity(g, alleleIdx + 1)
+	answer.Genotype = getZygosity(g, alleleIdx+1)
 
 	answer.GenotypeQuality, err = strconv.Atoi(g.FormatData[3])
 	if err != nil {
@@ -102,7 +114,10 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 	}
 
 	altReadsPerAllele := strings.Split(g.FormatData[1], ",")
-	answer.AltReads, err = strconv.Atoi(altReadsPerAllele[alleleIdx])
+	answer.AltReads, err = strconv.Atoi(altReadsPerAllele[alleleIdx+1])
+	//if answer.Vid == 5960 && alleleIdx == 0 {
+	//	fmt.Println(altReadsPerAllele)
+	//}
 	if err != nil {
 		answer.AltReads = 0
 	}

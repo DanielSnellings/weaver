@@ -12,8 +12,8 @@ type Variant struct {
 	Alt            []dna.Base
 	CellsGenotyped []int   // all Cell.Id with variant genotyped
 	CellsMutated   []int   // all Cell.Id with variant present
-	GenotypedFrac  float64 // % of post-filter cells with passing genotype//TODO
-	CellAf         float64 // allele frequency by cell count//TODO
+	GenotypedFrac  float64 // % of post-filter cells with passing genotype
+	CellAf         float64 // allele frequency by cell count //TODO split to true allele frequency (het/hom aware) and cells mutated fraction
 }
 
 type CellVar struct {
