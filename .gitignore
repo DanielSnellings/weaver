@@ -1,6 +1,9 @@
 #intellij IDE file
 *.iml
 
+#Rstudio files
+*.Rproj
+
 # Output of the go coverage tool
 *.out
 
@@ -14,3 +17,4 @@
 *.so
 *.dylib
 
+.Rproj.user
