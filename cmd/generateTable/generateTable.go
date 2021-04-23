@@ -17,9 +17,9 @@ type row struct {
 	Genotypes []cells.Zygosity
 }
 
-func generateTable(filename string, outfile string, cellFilter cells.CellFilterParam, globalFilter cells.GlobalFilterParam, minVcfQual float64, delim string, genotypeAsString bool) {
+func generateTable(filename string, outfile string, cellFilter cells.CellFilterParam, globalFilter cells.GlobalFilterParam, minVcfQual float64, delim string, genotypeAsString bool, minCellAf float64, maxCellAf float64) {
 	data := cells.ReadVcf(filename, cellFilter, globalFilter, minVcfQual)
-	rows := getRows(data)
+	rows := getRows(data, minCellAf, maxCellAf)
 	writeTable(outfile, generateColNames(data, delim), rows, delim, genotypeAsString)
 }
 
@@ -33,10 +33,13 @@ func generateColNames(d *cells.Data, delim string) string {
 	return s.String()
 }
 
-func getRows(d *cells.Data) []row {
+func getRows(d *cells.Data, minCellAf float64, maxCellAf float64) []row {
 	rows := make([]row, len(d.Variants))
 
 	for i := range d.Variants {
+		if d.Variants[i].CellAf > maxCellAf || d.Variants[i].CellAf < minCellAf {
+			continue
+		}
 		rows[i].Chr = d.Variants[i].Chr
 		rows[i].Pos = d.Variants[i].Pos+1 // back to 1-base for user
 		rows[i].Ref = d.Variants[i].Ref
@@ -58,6 +61,9 @@ func writeTable(outfile string, colNames string, rows []row, delim string, genot
 	}
 
 	for i := range rows {
+		if rows[i].Chr == "" { // row was filtered out
+			continue
+		}
 		rowToString(rows[i], delim, genotypeAsString)
 		_, err := fmt.Fprintln(out, rowToString(rows[i], delim, genotypeAsString))
 		if err != nil {
@@ -120,5 +126,5 @@ var v1file = "/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/CM2001_R
 var v2file = "/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/V2_Analysis/CM2001_2.vcf.gz"
 
 func main() {
-	generateTable(v1file, "CM2001.csv", defaultCellFilter, defaultGlobalFilter, defaultVcfQual, ",", false)
+	generateTable(v1file, "CM2001.csv", defaultCellFilter, defaultGlobalFilter, defaultVcfQual, ",", false, .2, .8)
 }

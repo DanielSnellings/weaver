@@ -133,48 +133,48 @@ var cellVar3 = []CellVar{{
 // Expected Variants
 // Allele 1 is removed by vcf quality filter
 var expectedAllele2 = Variant{
-	Id:             0,
-	Chr:            "chr1",
-	Pos:            1,
-	Ref:            dna.StringToBases("A"),
-	Alt:            dna.StringToBases("C"),
-	CellsGenotyped: []int{0, 1, 2},
-	CellsMutated:   []int{1, 2},
-	GenotypedFrac:  1,
-	CellAf:         float64(2) / float64(3),
+	Id:               0,
+	Chr:              "chr1",
+	Pos:              1,
+	Ref:              dna.StringToBases("A"),
+	Alt:              dna.StringToBases("C"),
+	CellsGenotyped:   []int{0, 1, 2},
+	CellsMutated:     []int{1, 2},
+	GenotypedFrac:    1,
+	CellsMutatedFrac: float64(2) / float64(3),
 }
 var expectedAllele3 = Variant{
-	Id:             1,
-	Chr:            "chr1",
-	Pos:            1,
-	Ref:            dna.StringToBases("A"),
-	Alt:            dna.StringToBases("G"),
-	CellsGenotyped: []int{0, 1, 2},
-	CellsMutated:   []int{2},
-	GenotypedFrac:  1,
-	CellAf:         float64(1) / float64(3),
+	Id:               1,
+	Chr:              "chr1",
+	Pos:              1,
+	Ref:              dna.StringToBases("A"),
+	Alt:              dna.StringToBases("G"),
+	CellsGenotyped:   []int{0, 1, 2},
+	CellsMutated:     []int{2},
+	GenotypedFrac:    1,
+	CellsMutatedFrac: float64(1) / float64(3),
 }
 var expectedAllele4 = Variant{
-	Id:             2,
-	Chr:            "chr1",
-	Pos:            2,
-	Ref:            dna.StringToBases("T"),
-	Alt:            dna.StringToBases("C"),
-	CellsGenotyped: []int{0, 1, 2},
-	CellsMutated:   []int{1},
-	GenotypedFrac:  1,
-	CellAf:         float64(1) / float64(3),
+	Id:               2,
+	Chr:              "chr1",
+	Pos:              2,
+	Ref:              dna.StringToBases("T"),
+	Alt:              dna.StringToBases("C"),
+	CellsGenotyped:   []int{0, 1, 2},
+	CellsMutated:     []int{1},
+	GenotypedFrac:    1,
+	CellsMutatedFrac: float64(1) / float64(3),
 }
 var expectedAllele5 = Variant{
-	Id:             3,
-	Chr:            "chr1",
-	Pos:            2,
-	Ref:            dna.StringToBases("T"),
-	Alt:            dna.StringToBases("A"),
-	CellsGenotyped: []int{0, 1, 2},
-	CellsMutated:   []int{2},
-	GenotypedFrac:  1,
-	CellAf:         float64(1) / float64(3),
+	Id:               3,
+	Chr:              "chr1",
+	Pos:              2,
+	Ref:              dna.StringToBases("T"),
+	Alt:              dna.StringToBases("A"),
+	CellsGenotyped:   []int{0, 1, 2},
+	CellsMutated:     []int{2},
+	GenotypedFrac:    1,
+	CellsMutatedFrac: float64(1) / float64(3),
 }
 var expectedNumVariants = 4
 
@@ -248,7 +248,7 @@ func equalVariants(a []Variant, b []Variant) bool {
 			return false
 		case a[i].GenotypedFrac != b[i].GenotypedFrac:
 			return false
-		case a[i].CellAf != b[i].CellAf:
+		case a[i].CellsMutatedFrac != b[i].CellsMutatedFrac:
 			return false
 		}
 	}

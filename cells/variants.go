@@ -7,15 +7,16 @@ import (
 // Variant stores information about a DNA change and the Id numbers
 // for each cell with a valid genotype and mutation
 type Variant struct {
-	Id             int // position in variant slice
-	Chr            string
-	Pos            int // zero base pos
-	Ref            []dna.Base
-	Alt            []dna.Base
-	CellsGenotyped []int   // all Cell.Id with variant genotyped
-	CellsMutated   []int   // all Cell.Id with variant present
-	GenotypedFrac  float64 // % of post-filter cells with passing genotype
-	CellAf         float64 // allele frequency by cell count //TODO split to true allele frequency (het/hom aware) and cells mutated fraction
+	Id               int // position in variant slice
+	Chr              string
+	Pos              int // zero base pos
+	Ref              []dna.Base
+	Alt              []dna.Base
+	CellsGenotyped   []int   // all Cell.Id with variant genotyped
+	CellsMutated     []int   // all Cell.Id with variant present
+	GenotypedFrac    float64 // % of post-filter cells with passing genotype
+	CellsMutatedFrac float64 // fraction of genotyped cells mutated
+	CellAf 			float64 // allele frequency in cells. genotype aware
 }
 
 // CellVar stores information about a paritcular variant inside a cell

@@ -91,7 +91,35 @@ func removeFailing(d *Data, ignoreCells []bool, ignoreVariants []bool) {
 		d.Variants[i].CellsGenotyped = updateCellIds(d.Variants[i].CellsGenotyped, ignoreCells, newCellIds)
 		d.Variants[i].CellsMutated = updateCellIds(d.Variants[i].CellsMutated, ignoreCells, newCellIds)
 		d.Variants[i].GenotypedFrac = float64(len(d.Variants[i].CellsGenotyped)) / totalCells
-		d.Variants[i].CellAf = float64(len(d.Variants[i].CellsMutated)) / float64(len(d.Variants[i].CellsGenotyped))
+		d.Variants[i].CellsMutatedFrac = float64(len(d.Variants[i].CellsMutated)) / float64(len(d.Variants[i].CellsGenotyped))
+		d.Variants[i].CellAf = getCellAf(d, i)
+	}
+}
+
+// getCellAf determines the mutant alleles/WT alleles for a single variant
+func getCellAf(d *Data, Vid int) float64 {
+	var total, mutant int
+	for _, cellId := range d.Variants[Vid].CellsGenotyped {
+		total += 2 // TODO HEMIZYGOSITY
+		mutant += zygosityToInt(d.Cells[cellId].Genotypes[Vid].Genotype)
+	}
+	return float64(mutant)/float64(total)
+}
+
+// zygosityToInt returns the number of alleles mutated for zygosity z
+func zygosityToInt(z Zygosity) int {
+	switch z {
+	case WildType:
+		return 0
+	case Heterozygous:
+		return 1
+	case Homozygous:
+		return 2
+	case Hemizygous:
+		return 1
+	default:
+		panic("zygosity not found in genotyped cell")
+		return 0
 	}
 }
 
