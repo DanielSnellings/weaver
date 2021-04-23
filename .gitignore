@@ -5,6 +5,9 @@
 *.Rproj
 Rproj*
 
+#HTML widgets created in R
+*.html
+
 # Output of the go coverage tool
 *.out
 
