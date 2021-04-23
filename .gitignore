@@ -3,6 +3,7 @@
 
 #Rstudio files
 *.Rproj
+Rproj*
 
 # Output of the go coverage tool
 *.out
