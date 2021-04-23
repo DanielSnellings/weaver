@@ -17,17 +17,28 @@ type row struct {
 	Genotypes []cells.Zygosity
 }
 
-func generateTable(filename string, outfile string, cellFilter cells.CellFilterParam, globalFilter cells.GlobalFilterParam, minVcfQual float64, delim string) {
+func generateTable(filename string, outfile string, cellFilter cells.CellFilterParam, globalFilter cells.GlobalFilterParam, minVcfQual float64, delim string, genotypeAsString bool) {
 	data := cells.ReadVcf(filename, cellFilter, globalFilter, minVcfQual)
 	rows := getRows(data)
-	writeTable(outfile, nil, rows, delim)
+	writeTable(outfile, generateColNames(data, delim), rows, delim, genotypeAsString)
+}
+
+func generateColNames(d *cells.Data, delim string) string {
+	var s strings.Builder
+	s.WriteString("Chromosome" + delim + "Position" + delim + "Ref" + delim + "Alt")
+	s.Grow(len(d.Cells) * (len(delim) + 5 + 5)) // 5 bytes for "Cell_" and 5 bytes for up to 99999 cells. More will be added dynamically if needed.
+	for i := range d.Cells {
+		s.WriteString(fmt.Sprintf("%sCell_%d", delim, d.Cells[i].Id)) // could just be i, but using the Id to be safe
+	}
+	return s.String()
 }
 
 func getRows(d *cells.Data) []row {
 	rows := make([]row, len(d.Variants))
+
 	for i := range d.Variants {
 		rows[i].Chr = d.Variants[i].Chr
-		rows[i].Pos = d.Variants[i].Pos
+		rows[i].Pos = d.Variants[i].Pos+1 // back to 1-base for user
 		rows[i].Ref = d.Variants[i].Ref
 		rows[i].Alt = d.Variants[i].Alt
 		rows[i].Genotypes = make([]cells.Zygosity, len(d.Cells))
@@ -38,15 +49,17 @@ func getRows(d *cells.Data) []row {
 	return rows
 }
 
-func writeTable(outfile string, colNames []string, rows []row, delim string) {
+func writeTable(outfile string, colNames string, rows []row, delim string, genotypeAsString bool) {
 	out := fileio.EasyCreate(outfile)
-	_, err := fmt.Fprintln(out, strings.Join(colNames, delim))
+	var err error
+	_, err = fmt.Fprintln(out, colNames)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	for i := range rows {
-		_, err := fmt.Fprintln(out, rowToString(rows[i], delim))
+		rowToString(rows[i], delim, genotypeAsString)
+		_, err := fmt.Fprintln(out, rowToString(rows[i], delim, genotypeAsString))
 		if err != nil {
 			log.Panic(err)
 		}
@@ -58,15 +71,25 @@ func writeTable(outfile string, colNames []string, rows []row, delim string) {
 	}
 }
 
-func rowToString(r row, delim string) string {
+func rowToString(r row, delim string, genotypeAsString bool) string {
 	var answer strings.Builder
 	_, err := answer.WriteString(fmt.Sprintf("%s%s%d%s%s%s%s", r.Chr, delim, r.Pos, delim, dna.BasesToString(r.Ref), delim, dna.BasesToString(r.Alt)))
 	if err != nil {
 		log.Panic(err)
 	}
-	for _, i := range r.Genotypes {
-		answer.WriteByte('\t')
-		answer.WriteString(fmt.Sprint(genotypeToInt(i)))
+
+	if genotypeAsString {
+		for _, genotype := range r.Genotypes {
+			answer.WriteString(delim + genotype.String())
+		}
+	} else {
+		for _, i := range r.Genotypes {
+			if i == cells.NoGenotype {
+				answer.WriteString(delim + "NA")
+			} else {
+				answer.WriteString(delim + fmt.Sprint(genotypeToInt(i)))
+			}
+		}
 	}
 
 	return answer.String()
@@ -93,6 +116,9 @@ var defaultVcfQual float64 = 100
 var defaultCellFilter = cells.CellFilterParam{MinGenotypeQuality: 30, MinGenotypeDepth: 10, MinReadAf: 0.2}
 var defaultGlobalFilter = cells.GlobalFilterParam{MinGenotypedFrac: 0.5, MinGenotypesPresent: 0.5, MinCellAf: 0.01}
 
+var v1file = "/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/CM2001_R/CM2001.vcf.gz"
+var v2file = "/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/V2_Analysis/CM2001_2.vcf.gz"
+
 func main() {
-	generateTable("/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/CM2001_R/CM2001.vcf.gz", "CM2001.tsv", defaultCellFilter, defaultGlobalFilter, defaultVcfQual, "\t")
+	generateTable(v1file, "CM2001.csv", defaultCellFilter, defaultGlobalFilter, defaultVcfQual, ",", false)
 }

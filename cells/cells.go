@@ -51,6 +51,9 @@ func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterP
 func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 	var offset int
 	for alleleIdx := range v.Alt { // for each allele make a new variant
+		if v.Alt[alleleIdx] == "." { // no variant. can be ignored
+			continue
+		}
 		var variant Variant
 		variant.Id = len(data.Variants)
 		variant.Chr = v.Chr
@@ -69,7 +72,6 @@ func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFil
 	var currCv CellVar
 	for idx := range v.Samples {
 		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
-
 		if currCv.GenotypeQuality > cellFilter.MinGenotypeQuality &&
 			currCv.ReadDepth > cellFilter.MinGenotypeDepth {
 
@@ -118,14 +120,17 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 
 // getZygosity parses a GenomeSample and returns the variant Zygosity
 func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
+
 	var alleleCount int
-	if g.AlleleOne == int16(alleleIdx) {
-		alleleCount++
-	}
-	if g.AlleleTwo == -1 && alleleCount == 1 {
+	if (g.AlleleTwo == -1 && g.AlleleOne == 1) ||
+		(g.AlleleTwo == 1 && g.AlleleOne == -1) {
 		return Hemizygous
 	}
 	if g.AlleleTwo == int16(alleleIdx) {
+		alleleCount++
+	}
+
+	if g.AlleleOne == int16(alleleIdx) {
 		alleleCount++
 	}
 
@@ -142,10 +147,12 @@ func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
 	}
 }
 
-// trimMatchingBases removed all left-aligned matching bases in ref and alt fields.
+// trimMatchingBases removed all matching 5' or 3' bases in ref and alt fields.
 // returns the trimmed slices and the number of bases trimmed
 func trimMatchingBases(a, b []dna.Base) ([]dna.Base, []dna.Base, int) {
 	var offset int
+
+	// trim left aligned (5'). increments offset
 	for len(a) > 0 && len(b) > 0 {
 		if a[0] == b[0] {
 			a = a[1:]
@@ -155,6 +162,17 @@ func trimMatchingBases(a, b []dna.Base) ([]dna.Base, []dna.Base, int) {
 			break
 		}
 	}
+
+	// trim right aligned (3'). does not increment offset
+	for len(a) > 0 && len(b) > 0 {
+		if a[len(a)-1] == b[len(b)-1] {
+			a = a[:len(a)-1]
+			b = b[:len(b)-1]
+		} else {
+			break
+		}
+	}
+
 	if len(a) == 0 && len(b) == 0 {
 		log.Panicf("error, all bases match trimmed in\n%s\nand\n%s", dna.BasesToString(a), dna.BasesToString(b))
 	}

@@ -42,6 +42,8 @@ func (z Zygosity) String() string {
 		return "Het"
 	case Homozygous:
 		return "Hom"
+	case Hemizygous:
+		return "Hemi"
 	default:
 		return "NOT FOUND"
 	}

@@ -1,4 +1,4 @@
-package plotting
+package plot
 
 import (
 	"os"
@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// TRY OUT gonum/plot FOR PLOTTING AS WELL AS GGPLOT2
 func TestHeatmap(t *testing.T) {
 	cmd := exec.Command("./heatmap.R")
 
