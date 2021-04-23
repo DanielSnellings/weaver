@@ -10,10 +10,10 @@ import (
 )
 
 type row struct {
-	Chr string
-	Pos int
-	Ref []dna.Base
-	Alt []dna.Base
+	Chr       string
+	Pos       int
+	Ref       []dna.Base
+	Alt       []dna.Base
 	Genotypes []cells.Zygosity
 }
 
