@@ -48,7 +48,7 @@ func ReadVcf(file string, cellFilter CellFilterParam, globalFilter GlobalFilterP
 }
 
 // parseVcf to fill the appropriate fields in data
-func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
+func parseVcf(v vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 	var offset int
 	for alleleIdx := range v.Alt { // for each allele make a new variant
 		if v.Alt[alleleIdx] == "." { // no variant. can be ignored
@@ -68,7 +68,7 @@ func parseVcf(v *vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 }
 
 // processCells parses all cells from a given vcf record and stores them directly in data
-func processCells(v *vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) Variant {
+func processCells(v vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) Variant {
 	var currCv CellVar
 	for idx := range v.Samples {
 		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
