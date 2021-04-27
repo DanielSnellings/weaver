@@ -14,20 +14,32 @@ var testfile = "../cells/testdata/small.vcf"
 
 func TestFindRoh(t *testing.T) {
 	d := cells.ReadVcf(v1file, cells.DefaultCellFilter, cells.DefaultGlobalFilter, cells.DefaultVcfQual)
-	answer := FindAllRunsOfHomozygosity(d)
+	roh := FindAllRunsOfHomozygosity(d)
+
+	counts := CountRunsOfHomozygosity(roh, d.Variants)
+
+	fmt.Println("Length\tCount")
+	for key, val := range counts {
+		fmt.Println(key.End-key.Start, "\t", val)
+	}
+
 
 	out := fileio.EasyCreate("roh.csv")
-	_, err := fmt.Fprintln(out, "Cell,Chromosome,Start,End")
+	_, err := fmt.Fprintln(out, "Cell,Chromosome,StartOrEnd,Pos")
 	if err != nil {
 		log.Panic()
 	}
 
-	for i := range answer {
-		if len(answer[i]) == 0 {
+	for i := range roh {
+		if len(roh[i]) == 0 {
 			continue
 		}
-		for _, run := range answer[i] {
-			_, err = fmt.Fprintf(out, "Cell_%d,%s,%d,%d\n", i, d.Variants[run[0]].Chr, d.Variants[run[0]].Pos+1, d.Variants[run[len(run)-1]].Pos+1)
+		for _, run := range roh[i] {
+			_, err = fmt.Fprintf(out, "Cell_%d,%s,%s,%d\n", i, d.Variants[run[0]].Chr, "start", d.Variants[run[0]].Pos+1)
+			if err != nil {
+				log.Panic()
+			}
+			_, err = fmt.Fprintf(out, "Cell_%d,%s,%s,%d\n", i, d.Variants[run[0]].Chr, "end", d.Variants[run[len(run)-1]].Pos+1)
 			if err != nil {
 				log.Panic()
 			}

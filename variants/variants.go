@@ -55,6 +55,13 @@ func (z Zygosity) String() string {
 	}
 }
 
+// Region defines a genomic span. left-closed, right-open.
+type Region struct {
+	Chr 	string
+	Start 	int // base 0
+	End 	int // base 1
+}
+
 const (
 	NoGenotype Zygosity = iota
 	WildType

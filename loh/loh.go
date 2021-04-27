@@ -18,6 +18,15 @@ import (
 // slice, however they do not break the run.
 type RunOfHomozygosity []int
 
+// Region converts a RunOfHomozygosity into a region struct (able to be key in map).
+func (r RunOfHomozygosity) Region(v []variants.Variant) variants.Region {
+	return variants.Region{
+		Chr: v[r[0]].Chr,
+		Start: v[r[0]].Pos,
+		End: v[r[len(r)-1]].Pos + 1,
+	}
+}
+
 // FindAllRunsOfHomozygosity identifies constitutionally heterozygous variants go to
 // homozygosity across a contiguous genomic span. Returns a slice of slices of
 // RunOfHomozygosity where return[i] is a slice of all homozygous runs for cell
@@ -68,6 +77,16 @@ func FindRunsOfHomozygosity(c cells.Cell, hetVariantIds []int, vars []variants.V
 
 	if len(currRun) > 1 { // in case we end in an ongoing run
 		answer = append(answer, currRun)
+	}
+	return answer
+}
+
+func CountRunsOfHomozygosity(r [][]RunOfHomozygosity, v []variants.Variant) map[variants.Region]int {
+	answer := make(map[variants.Region]int)
+	for i := range r {
+		for _, run := range r[i] {
+			answer[run.Region(v)]++
+		}
 	}
 	return answer
 }
