@@ -13,6 +13,7 @@ Rproj*
 
 #Test binary, build with 'go test -c'
 *.test
+*.csv
 
 #Binaries for programs and plugins
 *.exe

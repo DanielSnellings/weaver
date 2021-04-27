@@ -2,6 +2,10 @@ package cells
 
 import "github.com/ddsnellings/weaver/variants"
 
+var DefaultVcfQual float64 = 100
+var DefaultCellFilter = CellFilterParam{MinGenotypeQuality: 30, MinGenotypeDepth: 10, MinReadAf: 0.2}
+var DefaultGlobalFilter = GlobalFilterParam{MinGenotypedFrac: 0.5, MinGenotypesPresent: 0.5, MinCellAf: 0.01}
+
 // CellFilterParam defines the minimum values used for filtering cell.
 // These filters are applied on a per-cell basis
 type CellFilterParam struct {
