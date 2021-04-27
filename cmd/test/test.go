@@ -16,7 +16,7 @@ func main() {
 	fmt.Println(len(data.Cells))
 
 	for _, variant := range data.Variants {
-		fmt.Println(variant.Chr, "\t", variant.Pos, "\t", dna.BasesToString(variant.Ref), "\t", dna.BasesToString(variant.Alt), "\t", variant.CellAf, "\t", len(variant.CellsMutated), "\t", len(variant.CellsGenotyped))
+		fmt.Println(variant.Chr, "\t", variant.Pos, "\t", dna.BasesToString(variant.Ref), "\t", dna.BasesToString(variant.Alt), "\t", variant.CellsMutatedFrac, "\t", len(variant.CellsMutated), "\t", len(variant.CellsGenotyped))
 	}
 
 	//for i := range data.Variants{

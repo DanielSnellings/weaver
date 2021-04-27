@@ -34,7 +34,6 @@ func TestPC(t *testing.T) {
 	pc.VectorsTo(&vec)
 	proj.Mul(afMat, vec.Slice(0, len(d.Variants), 0, k))
 
-
 	out := fileio.EasyCreate("pc.csv")
 	_, err := fmt.Fprintln(out, getHeader(d))
 	if err != nil {
@@ -50,7 +49,9 @@ func TestPC(t *testing.T) {
 		}
 	}
 	err = out.Close()
-	if err != nil {log.Panic()}
+	if err != nil {
+		log.Panic()
+	}
 
 	//fmt.Printf("proj = %.4f", mat.Formatted(&proj, mat.Prefix("       ")))
 }

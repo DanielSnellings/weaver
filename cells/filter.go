@@ -1,5 +1,7 @@
 package cells
 
+import "github.com/ddsnellings/weaver/variants"
+
 // CellFilterParam defines the minimum values used for filtering cell.
 // These filters are applied on a per-cell basis
 type CellFilterParam struct {
@@ -103,19 +105,19 @@ func getCellAf(d *Data, Vid int) float64 {
 		total += 2 // TODO HEMIZYGOSITY
 		mutant += zygosityToInt(d.Cells[cellId].Genotypes[Vid].Genotype)
 	}
-	return float64(mutant)/float64(total)
+	return float64(mutant) / float64(total)
 }
 
 // zygosityToInt returns the number of alleles mutated for zygosity z
-func zygosityToInt(z Zygosity) int {
+func zygosityToInt(z variants.Zygosity) int {
 	switch z {
-	case WildType:
+	case variants.WildType:
 		return 0
-	case Heterozygous:
+	case variants.Heterozygous:
 		return 1
-	case Homozygous:
+	case variants.Homozygous:
 		return 2
-	case Hemizygous:
+	case variants.Hemizygous:
 		return 1
 	default:
 		panic("zygosity not found in genotyped cell")
@@ -124,8 +126,8 @@ func zygosityToInt(z Zygosity) int {
 }
 
 // updateCellVar updates the CellVar slice in each Variant after removing variants during filtering
-func updateCellVar(cellVars []CellVar, ignoreVariants []bool, newVariantIds []int) []CellVar {
-	answer := make([]CellVar, 0, len(cellVars))
+func updateCellVar(cellVars []variants.CellVar, ignoreVariants []bool, newVariantIds []int) []variants.CellVar {
+	answer := make([]variants.CellVar, 0, len(cellVars))
 	for _, currCv := range cellVars {
 		if ignoreVariants[currCv.Vid] {
 			continue
@@ -150,9 +152,9 @@ func updateCellIds(cellIds []int, ignoreCells []bool, newCellIds []int) []int {
 
 // fetchPassingCellsAndVariants retrieves all cells and variants that pass filters according to ignoreCells and ignoreVariants.
 // The newCellIds and newVariantIds returns record the old Id for each cell/variant so that other fields can be updated later.
-func fetchPassingCellsAndVariants(d *Data, ignoreCells []bool, ignoreVariants []bool) (passingCells []Cell, passingVariants []Variant, newCellIds []int, newVariantIds []int) {
+func fetchPassingCellsAndVariants(d *Data, ignoreCells []bool, ignoreVariants []bool) (passingCells []Cell, passingVariants []variants.Variant, newCellIds []int, newVariantIds []int) {
 	passingCells = make([]Cell, int(countFalse(ignoreCells)))
-	passingVariants = make([]Variant, int(countFalse(ignoreVariants)))
+	passingVariants = make([]variants.Variant, int(countFalse(ignoreVariants)))
 	newCellIds = make([]int, len(d.Cells))       // such that newCellIds[oldId] is the new Id after filtering
 	newVariantIds = make([]int, len(d.Variants)) // such that newVariantIds[oldId] is the new Id after filtering
 	var currCellIdx, currVariantIdx int
@@ -191,7 +193,7 @@ func countFalse(b []bool) float64 {
 }
 
 // countPassingCellVar returns a float64 with the number of CellVar passing filters
-func countPassingCellVar(v []CellVar, ignoreVariants []bool) float64 {
+func countPassingCellVar(v []variants.CellVar, ignoreVariants []bool) float64 {
 	var answer float64
 	for i := range v {
 		if !ignoreVariants[v[i].Vid] {

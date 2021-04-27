@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ddsnellings/weaver/cells"
+	"github.com/ddsnellings/weaver/variants"
 	"github.com/vertgenlab/gonomics/dna"
 	"github.com/vertgenlab/gonomics/fileio"
 	"log"
@@ -14,7 +15,7 @@ type row struct {
 	Pos       int
 	Ref       []dna.Base
 	Alt       []dna.Base
-	Genotypes []cells.Zygosity
+	Genotypes []variants.Zygosity
 }
 
 func generateTable(filename string, outfile string, cellFilter cells.CellFilterParam, globalFilter cells.GlobalFilterParam, minVcfQual float64, delim string, genotypeAsString bool, minCellAf float64, maxCellAf float64) {
@@ -41,10 +42,10 @@ func getRows(d *cells.Data, minCellAf float64, maxCellAf float64) []row {
 			continue
 		}
 		rows[i].Chr = d.Variants[i].Chr
-		rows[i].Pos = d.Variants[i].Pos+1 // back to 1-base for user
+		rows[i].Pos = d.Variants[i].Pos + 1 // back to 1-base for user
 		rows[i].Ref = d.Variants[i].Ref
 		rows[i].Alt = d.Variants[i].Alt
-		rows[i].Genotypes = make([]cells.Zygosity, len(d.Cells))
+		rows[i].Genotypes = make([]variants.Zygosity, len(d.Cells))
 		for _, cellId := range d.Variants[i].CellsGenotyped {
 			rows[i].Genotypes[cellId] = d.Cells[cellId].Genotypes[i].Genotype
 		}
@@ -90,7 +91,7 @@ func rowToString(r row, delim string, genotypeAsString bool) string {
 		}
 	} else {
 		for _, i := range r.Genotypes {
-			if i == cells.NoGenotype {
+			if i == variants.NoGenotype {
 				answer.WriteString(delim + "NA")
 			} else {
 				answer.WriteString(delim + fmt.Sprint(genotypeToInt(i)))
@@ -101,17 +102,17 @@ func rowToString(r row, delim string, genotypeAsString bool) string {
 	return answer.String()
 }
 
-func genotypeToInt(z cells.Zygosity) int {
+func genotypeToInt(z variants.Zygosity) int {
 	switch z {
-	case cells.NoGenotype:
+	case variants.NoGenotype:
 		return -1
-	case cells.WildType:
+	case variants.WildType:
 		return 0
-	case cells.Heterozygous:
+	case variants.Heterozygous:
 		return 1
-	case cells.Homozygous:
+	case variants.Homozygous:
 		return 2
-	case cells.Hemizygous:
+	case variants.Hemizygous:
 		return 3
 	default:
 		return -1

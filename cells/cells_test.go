@@ -1,6 +1,7 @@
 package cells
 
 import (
+	"github.com/ddsnellings/weaver/variants"
 	"github.com/vertgenlab/gonomics/dna"
 	"testing"
 )
@@ -21,7 +22,7 @@ import (
 
 var expectedData = Data{
 	Cells:    []Cell{expectedCell1, expectedCell2, expectedCell3},
-	Variants: []Variant{expectedAllele2, expectedAllele3, expectedAllele4, expectedAllele5},
+	Variants: []variants.Variant{expectedAllele2, expectedAllele3, expectedAllele4, expectedAllele5},
 }
 
 // Expected Cells
@@ -30,30 +31,30 @@ var expectedCell1 = Cell{
 	Genotypes:        cellVar1,
 	GenotypesPresent: 1,
 }
-var cellVar1 = []CellVar{{
+var cellVar1 = []variants.CellVar{{
 	Vid:             0,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        0,
 	Af:              0,
 }, {
 	Vid:             1,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        0,
 	Af:              0,
 }, {
 	Vid:             2,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        2,
 	Af:              float64(2) / float64(100),
 }, {
 	Vid:             3,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        0,
@@ -65,30 +66,30 @@ var expectedCell2 = Cell{
 	Genotypes:        cellVar2,
 	GenotypesPresent: 1,
 }
-var cellVar2 = []CellVar{{
+var cellVar2 = []variants.CellVar{{
 	Vid:             0,
-	Genotype:        Heterozygous,
+	Genotype:        variants.Heterozygous,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        30,
 	Af:              float64(30) / float64(100),
 }, {
 	Vid:             1,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        2,
 	Af:              float64(2) / float64(100),
 }, {
 	Vid:             2,
-	Genotype:        Homozygous,
+	Genotype:        variants.Homozygous,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        90,
 	Af:              float64(90) / float64(100),
 }, {
 	Vid:             3,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        1,
@@ -100,30 +101,30 @@ var expectedCell3 = Cell{
 	Genotypes:        cellVar3,
 	GenotypesPresent: 1,
 }
-var cellVar3 = []CellVar{{
+var cellVar3 = []variants.CellVar{{
 	Vid:             0,
-	Genotype:        Heterozygous,
+	Genotype:        variants.Heterozygous,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        50,
 	Af:              float64(50) / float64(100),
 }, {
 	Vid:             1,
-	Genotype:        Heterozygous,
+	Genotype:        variants.Heterozygous,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        40,
 	Af:              float64(40) / float64(100),
 }, {
 	Vid:             2,
-	Genotype:        WildType,
+	Genotype:        variants.WildType,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        0,
 	Af:              0,
 }, {
 	Vid:             3,
-	Genotype:        Heterozygous,
+	Genotype:        variants.Heterozygous,
 	GenotypeQuality: 99,
 	ReadDepth:       100,
 	AltReads:        50,
@@ -132,7 +133,7 @@ var cellVar3 = []CellVar{{
 
 // Expected Variants
 // Allele 1 is removed by vcf quality filter
-var expectedAllele2 = Variant{
+var expectedAllele2 = variants.Variant{
 	Id:               0,
 	Chr:              "chr1",
 	Pos:              1,
@@ -143,7 +144,7 @@ var expectedAllele2 = Variant{
 	GenotypedFrac:    1,
 	CellsMutatedFrac: float64(2) / float64(3),
 }
-var expectedAllele3 = Variant{
+var expectedAllele3 = variants.Variant{
 	Id:               1,
 	Chr:              "chr1",
 	Pos:              1,
@@ -154,7 +155,7 @@ var expectedAllele3 = Variant{
 	GenotypedFrac:    1,
 	CellsMutatedFrac: float64(1) / float64(3),
 }
-var expectedAllele4 = Variant{
+var expectedAllele4 = variants.Variant{
 	Id:               2,
 	Chr:              "chr1",
 	Pos:              2,
@@ -165,7 +166,7 @@ var expectedAllele4 = Variant{
 	GenotypedFrac:    1,
 	CellsMutatedFrac: float64(1) / float64(3),
 }
-var expectedAllele5 = Variant{
+var expectedAllele5 = variants.Variant{
 	Id:               3,
 	Chr:              "chr1",
 	Pos:              2,
@@ -211,7 +212,7 @@ func equalCells(a []Cell, b []Cell) bool {
 	return true
 }
 
-func equalCellVar(a []CellVar, b []CellVar) bool {
+func equalCellVar(a []variants.CellVar, b []variants.CellVar) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -225,7 +226,7 @@ func equalCellVar(a []CellVar, b []CellVar) bool {
 	return true
 }
 
-func equalVariants(a []Variant, b []Variant) bool {
+func equalVariants(a []variants.Variant, b []variants.Variant) bool {
 	if len(a) != len(b) {
 		return false
 	}

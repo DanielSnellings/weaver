@@ -1,6 +1,7 @@
-package cells
+package variants
 
 import (
+	"fmt"
 	"github.com/vertgenlab/gonomics/dna"
 )
 
@@ -16,7 +17,11 @@ type Variant struct {
 	CellsMutated     []int   // all Cell.Id with variant present
 	GenotypedFrac    float64 // % of post-filter cells with passing genotype
 	CellsMutatedFrac float64 // fraction of genotyped cells mutated
-	CellAf 			float64 // allele frequency in cells. genotype aware
+	CellAf           float64 // allele frequency in cells. genotype aware
+}
+
+func (v Variant) String() string {
+	return fmt.Sprintf("%s:%d:%s:%s", v.Chr, v.Pos, dna.BasesToString(v.Ref), dna.BasesToString(v.Alt))
 }
 
 // CellVar stores information about a paritcular variant inside a cell

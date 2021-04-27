@@ -1,6 +1,7 @@
 package cells
 
 import (
+	"github.com/ddsnellings/weaver/variants"
 	"github.com/vertgenlab/gonomics/dna"
 	"github.com/vertgenlab/gonomics/vcf"
 	"log"
@@ -14,14 +15,14 @@ type BarcodeMap map[Barcode]Cell
 // Cell stores information on genotypes for a single cell
 type Cell struct {
 	Id               int
-	Genotypes        []CellVar
+	Genotypes        []variants.CellVar
 	GenotypesPresent float64
 }
 
 // Data organizes Cell and Variant information from a vcf file
 type Data struct {
 	Cells    []Cell
-	Variants []Variant
+	Variants []variants.Variant
 }
 
 // ReadVcf into a Data struct that stores information about Cells and Variants that pass the input filters
@@ -54,7 +55,7 @@ func parseVcf(v vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 		if v.Alt[alleleIdx] == "." { // no variant. can be ignored
 			continue
 		}
-		var variant Variant
+		var variant variants.Variant
 		variant.Id = len(data.Variants)
 		variant.Chr = v.Chr
 		variant.Pos = v.Pos - 1
@@ -68,8 +69,8 @@ func parseVcf(v vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 }
 
 // processCells parses all cells from a given vcf record and stores them directly in data
-func processCells(v vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) Variant {
-	var currCv CellVar
+func processCells(v vcf.Vcf, variant variants.Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) variants.Variant {
+	var currCv variants.CellVar
 	for idx := range v.Samples {
 		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
 		if currCv.GenotypeQuality > cellFilter.MinGenotypeQuality &&
@@ -78,8 +79,8 @@ func processCells(v vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilt
 			variant.CellsGenotyped = append(variant.CellsGenotyped, idx)
 			if currCv.Af > cellFilter.MinReadAf {
 				variant.CellsMutated = append(variant.CellsMutated, idx)
-			} else if currCv.Genotype != WildType {
-				currCv.Genotype = WildType
+			} else if currCv.Genotype != variants.WildType {
+				currCv.Genotype = variants.WildType
 			}
 		}
 		data.Cells[idx].Genotypes = append(data.Cells[idx].Genotypes, currCv)
@@ -88,8 +89,8 @@ func processCells(v vcf.Vcf, variant Variant, alleleIdx int, cellFilter CellFilt
 }
 
 // getCellVar parses a GenomeSample into a CellVar
-func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
-	var answer CellVar
+func getCellVar(g vcf.GenomeSample, alleleIdx int, variant variants.Variant) variants.CellVar {
+	var answer variants.CellVar
 	var err error
 
 	answer.Vid = variant.Id
@@ -119,12 +120,12 @@ func getCellVar(g vcf.GenomeSample, alleleIdx int, variant Variant) CellVar {
 }
 
 // getZygosity parses a GenomeSample and returns the variant Zygosity
-func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
+func getZygosity(g vcf.GenomeSample, alleleIdx int) variants.Zygosity {
 
 	var alleleCount int
 	if (g.AlleleTwo == -1 && g.AlleleOne == 1) ||
 		(g.AlleleTwo == 1 && g.AlleleOne == -1) {
-		return Hemizygous
+		return variants.Hemizygous
 	}
 	if g.AlleleTwo == int16(alleleIdx) {
 		alleleCount++
@@ -136,14 +137,14 @@ func getZygosity(g vcf.GenomeSample, alleleIdx int) Zygosity {
 
 	switch alleleCount {
 	case 0:
-		return WildType
+		return variants.WildType
 	case 1:
-		return Heterozygous
+		return variants.Heterozygous
 	case 2:
-		return Homozygous
+		return variants.Homozygous
 	default:
 		log.Panic("could not get zygosity for", g)
-		return WildType
+		return variants.WildType
 	}
 }
 
