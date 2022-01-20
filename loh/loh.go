@@ -35,7 +35,7 @@ type Haplotype struct {
 }
 
 func (h Haplotype) String() string {
-	return variantIdsString(h.VariantIds) + ":" + genotypesToString(h.Genotypes)
+	return variantIdsString(h.VariantIds) + "," + genotypesToString(h.Genotypes)
 }
 
 func variantIdsString(ids []int) string {

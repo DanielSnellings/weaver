@@ -13,7 +13,7 @@ package.check <- lapply(
 
 
 ## Read in Cell-Variant matrix
-data <- read.csv("CM2001.csv")
+data <- read.csv("ANG148.csv")
 
 ## Flip x and y in cell data for hierarchical clustering of cells
 tdata <- data.frame(t(data[5:length(data[1,])]))

@@ -43,11 +43,11 @@ func (z Zygosity) String() string {
 	case NoGenotype:
 		return "NA"
 	case WildType:
-		return "WT"
+		return "Ref"
 	case Heterozygous:
 		return "Het"
 	case Homozygous:
-		return "Hom"
+		return "Alt"
 	case Hemizygous:
 		return "Hemi"
 	default:

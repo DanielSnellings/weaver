@@ -123,9 +123,10 @@ var defaultVcfQual float64 = 100
 var defaultCellFilter = cells.CellFilterParam{MinGenotypeQuality: 30, MinGenotypeDepth: 10, MinReadAf: 0.2}
 var defaultGlobalFilter = cells.GlobalFilterParam{MinGenotypedFrac: 0.5, MinGenotypesPresent: 0.5, MinCellAf: 0.01}
 
+var infile = "/Users/danielsnellings/Desktop/CCM2066.vcf.gz"
 var v1file = "/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/CM2001_R/CM2001.vcf.gz"
 var v2file = "/Users/danielsnellings/Desktop/Data/21-04-06_Tapestri_Run/V2_Analysis/CM2001_2.vcf.gz"
 
 func main() {
-	generateTable(v1file, "CM2001.csv", defaultCellFilter, defaultGlobalFilter, defaultVcfQual, ",", false, .2, .8)
+	generateTable(infile, "CCM2066.csv", defaultCellFilter, defaultGlobalFilter, defaultVcfQual, ",", false, .2, .8)
 }

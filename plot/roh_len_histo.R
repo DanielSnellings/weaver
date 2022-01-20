@@ -11,13 +11,7 @@ package.check <- lapply(
   }
 )
 
-data <- read.csv("roh.csv")
-
-roh_chr7 <- data[ which(data$Chromosome == "chr7"), ]
-roh_chr3 <- data[ which(data$Chromosome == "chr3"), ]
-
-p_chr7 <- ggplot(roh_chr3, aes(x=Pos, color=StartOrEnd)) + 
-  geom_histogram(aes(y=..density..), binwidth = 10, fill = "white", position="dodge") +
-  geom_density(adjust = 1/5)
-p_chr7
-
+data <- read.csv("roh_len_histogram.csv")
+#data$Length <- factor(data$Length)
+ggplot(data, aes(x=Length, y=Count_min5))+
+  geom_bar(stat="identity", color="darkblue", fill="lightblue")

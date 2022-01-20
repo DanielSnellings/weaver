@@ -72,7 +72,7 @@ func parseVcf(v vcf.Vcf, cellFilter CellFilterParam, data *Data) {
 func processCells(v vcf.Vcf, variant variants.Variant, alleleIdx int, cellFilter CellFilterParam, data *Data) variants.Variant {
 	var currCv variants.CellVar
 	for idx := range v.Samples {
-		currCv = getCellVar(v.Samples[idx], alleleIdx, variant)
+		currCv = getCellVar(v, v.Samples[idx], alleleIdx, variant)
 		if currCv.GenotypeQuality > cellFilter.MinGenotypeQuality &&
 			currCv.ReadDepth > cellFilter.MinGenotypeDepth {
 
@@ -89,7 +89,7 @@ func processCells(v vcf.Vcf, variant variants.Variant, alleleIdx int, cellFilter
 }
 
 // getCellVar parses a GenomeSample into a CellVar
-func getCellVar(g vcf.GenomeSample, alleleIdx int, variant variants.Variant) variants.CellVar {
+func getCellVar(v vcf.Vcf, g vcf.GenomeSample, alleleIdx int, variant variants.Variant) variants.CellVar {
 	var answer variants.CellVar
 	var err error
 
